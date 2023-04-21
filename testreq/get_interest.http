@@ -1,0 +1,7 @@
+###
+
+GRPC localhost:6060/pbapi.UserService/GetInterest
+
+{
+  "id": "1"
+}
