@@ -1,7 +1,0 @@
-###
-
-GRPC localhost:6060/pbapi.UserService/CreateInterest
-
-{
-  "name": "Walking"
-}
