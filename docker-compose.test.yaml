@@ -1,0 +1,48 @@
+version: '3.8'
+
+networks:
+  tests:
+    driver: bridge
+
+services:
+
+  user-service-test:
+    container_name: user-service-test
+    depends_on:
+      user-service-storage-test:
+        condition: service_healthy
+    build:
+      dockerfile: test.Dockerfile
+    environment:
+      - GRPC_HOST=0.0.0.0
+      - GRPC_PORT=16060
+      - LOG_LVL=info
+      - STORAGE_HOST=user-service-storage-test
+      - STORAGE_PORT=5432
+      - STORAGE_USER=postgres
+      - STORAGE_PASSWORD=postgres
+      - USER_DB_NAME=postgres
+      - USER_TABLE_NAME=users_test
+      - CITY_TABLE_NAME=city_test
+      - INTEREST_TABLE_NAME=interest_test
+      - USER_PER_INTEREST_TABLE_NAME=user_per_interest_test
+    ports:
+        - "16060:16060"
+    networks:
+      - tests
+
+  user-service-storage-test:
+    image: postgres:latest
+    container_name: user-service-storage-test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 1s
+      retries: 5
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    expose:
+      - "15432"
+    networks:
+      - tests
