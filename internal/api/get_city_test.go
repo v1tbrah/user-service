@@ -14,15 +14,15 @@ import (
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_GetCity(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		req             *pbapi.GetCityRequest
-		expectedResp    *pbapi.GetCityResponse
+		req             *upbapi.GetCityRequest
+		expectedResp    *upbapi.GetCityResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -41,9 +41,9 @@ func TestAPI_GetCity(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.GetCityRequest{Id: int64(1)},
-			expectedResp: &pbapi.GetCityResponse{
-				City: &pbapi.City{
+			req: &upbapi.GetCityRequest{Id: int64(1)},
+			expectedResp: &upbapi.GetCityResponse{
+				City: &upbapi.City{
 					Id:   int64(1),
 					Name: "TestName",
 				},
@@ -59,9 +59,9 @@ func TestAPI_GetCity(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req:             &pbapi.GetCityRequest{Id: int64(1)},
+			req:             &upbapi.GetCityRequest{Id: int64(1)},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrCityNotFoundByID,
+			expectedErr:     upbapi.ErrCityNotFoundByID,
 			expectedErrCode: codes.NotFound,
 		},
 		{
@@ -74,7 +74,7 @@ func TestAPI_GetCity(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req:             &pbapi.GetCityRequest{Id: int64(1)},
+			req:             &upbapi.GetCityRequest{Id: int64(1)},
 			wantErr:         true,
 			expectedErr:     errors.New("unexpected"),
 			expectedErrCode: codes.Internal,

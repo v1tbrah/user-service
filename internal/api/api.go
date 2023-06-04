@@ -11,13 +11,13 @@ import (
 	"google.golang.org/grpc"
 
 	"gitlab.com/pet-pr-social-network/user-service/config"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 type API struct {
 	server  *grpc.Server
 	storage Storage
-	pbapi.UnimplementedUserServiceServer
+	upbapi.UnimplementedUserServiceServer
 }
 
 func New(storage Storage) (newAPI *API) {
@@ -30,7 +30,7 @@ func New(storage Storage) (newAPI *API) {
 		storage: storage,
 	}
 
-	pbapi.RegisterUserServiceServer(newAPI.server, newAPI)
+	upbapi.RegisterUserServiceServer(newAPI.server, newAPI)
 
 	return newAPI
 }

@@ -12,15 +12,15 @@ import (
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_CreateCity(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		req             *pbapi.CreateCityRequest
-		expectedResp    *pbapi.CreateCityResponse
+		req             *upbapi.CreateCityRequest
+		expectedResp    *upbapi.CreateCityResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -35,21 +35,21 @@ func TestAPI_CreateCity(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.CreateCityRequest{
+			req: &upbapi.CreateCityRequest{
 				Name: "TestName",
 			},
-			expectedResp: &pbapi.CreateCityResponse{Id: int64(1)},
+			expectedResp: &upbapi.CreateCityResponse{Id: int64(1)},
 		},
 		{
 			name: "empty name",
 			mockStorage: func(t *testing.T) *mocks.Storage {
 				return mocks.NewStorage(t)
 			},
-			req: &pbapi.CreateCityRequest{
+			req: &upbapi.CreateCityRequest{
 				Name: "",
 			},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrEmptyName,
+			expectedErr:     upbapi.ErrEmptyName,
 			expectedErrCode: codes.InvalidArgument,
 		},
 		{
@@ -57,11 +57,11 @@ func TestAPI_CreateCity(t *testing.T) {
 			mockStorage: func(t *testing.T) *mocks.Storage {
 				return mocks.NewStorage(t)
 			},
-			req: &pbapi.CreateCityRequest{
+			req: &upbapi.CreateCityRequest{
 				Name: "   ",
 			},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrEmptyName,
+			expectedErr:     upbapi.ErrEmptyName,
 			expectedErrCode: codes.InvalidArgument,
 		},
 		{
@@ -74,7 +74,7 @@ func TestAPI_CreateCity(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.CreateCityRequest{
+			req: &upbapi.CreateCityRequest{
 				Name: "TestName",
 			},
 			wantErr:         true,

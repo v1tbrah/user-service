@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package pbapi;
+package upbapi;
 
-option go_package = "user-service/pbapi";
+option go_package = "user-service/upbapi";
 
 service UserService {
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {}

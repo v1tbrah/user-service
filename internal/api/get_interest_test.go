@@ -14,15 +14,15 @@ import (
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_GetInterest(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		req             *pbapi.GetInterestRequest
-		expectedResp    *pbapi.GetInterestResponse
+		req             *upbapi.GetInterestRequest
+		expectedResp    *upbapi.GetInterestResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -41,9 +41,9 @@ func TestAPI_GetInterest(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.GetInterestRequest{Id: int64(1)},
-			expectedResp: &pbapi.GetInterestResponse{
-				Interest: &pbapi.Interest{
+			req: &upbapi.GetInterestRequest{Id: int64(1)},
+			expectedResp: &upbapi.GetInterestResponse{
+				Interest: &upbapi.Interest{
 					Id:   int64(1),
 					Name: "TestName",
 				},
@@ -59,9 +59,9 @@ func TestAPI_GetInterest(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req:             &pbapi.GetInterestRequest{Id: int64(1)},
+			req:             &upbapi.GetInterestRequest{Id: int64(1)},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrInterestNotFoundByID,
+			expectedErr:     upbapi.ErrInterestNotFoundByID,
 			expectedErrCode: codes.NotFound,
 		},
 		{
@@ -74,7 +74,7 @@ func TestAPI_GetInterest(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req:             &pbapi.GetInterestRequest{Id: int64(1)},
+			req:             &upbapi.GetInterestRequest{Id: int64(1)},
 			wantErr:         true,
 			expectedErr:     errors.New("unexpected"),
 			expectedErrCode: codes.Internal,

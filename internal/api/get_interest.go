@@ -11,14 +11,14 @@ import (
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
-func (a *API) GetInterest(ctx context.Context, req *pbapi.GetInterestRequest) (*pbapi.GetInterestResponse, error) {
+func (a *API) GetInterest(ctx context.Context, req *upbapi.GetInterestRequest) (*upbapi.GetInterestResponse, error) {
 	interest, err := a.storage.GetInterest(ctx, req.GetId())
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return nil, status.Error(codes.NotFound, pbapi.ErrInterestNotFoundByID.Error())
+			return nil, status.Error(codes.NotFound, upbapi.ErrInterestNotFoundByID.Error())
 		}
 		log.Error().Err(err).Str("id", strconv.Itoa(int(req.GetId()))).Msg("storage.GetInterest")
 		return nil, status.Error(codes.Internal, err.Error())
@@ -27,9 +27,9 @@ func (a *API) GetInterest(ctx context.Context, req *pbapi.GetInterestRequest) (*
 	return modelInterestToProtoGetInterestResponse(interest), nil
 }
 
-func modelInterestToProtoGetInterestResponse(interest model.Interest) *pbapi.GetInterestResponse {
-	return &pbapi.GetInterestResponse{
-		Interest: &pbapi.Interest{
+func modelInterestToProtoGetInterestResponse(interest model.Interest) *upbapi.GetInterestResponse {
+	return &upbapi.GetInterestResponse{
+		Interest: &upbapi.Interest{
 			Id:   interest.ID,
 			Name: interest.Name,
 		},
