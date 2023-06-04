@@ -9,11 +9,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 )
 
 func TestStorage_CreateCity(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	testCity := model.City{Name: "testCityName"}
 	idNewCity, err := s.CreateCity(context.Background(), testCity)
@@ -21,7 +22,7 @@ func TestStorage_CreateCity(t *testing.T) {
 		t.Fatalf("s.CreateCity: %v", err)
 	}
 
-	row := s.dbConn.QueryRow(fmt.Sprintf("SELECT name FROM %s WHERE id=%d", s.cfg.CityTableName, idNewCity))
+	row := s.db.QueryRow(fmt.Sprintf("SELECT name FROM table_city WHERE id=%d", idNewCity))
 	if err = row.Scan(&testCity.Name); err != nil {
 		t.Fatalf("scan get new city name: %v", err)
 	}
@@ -35,10 +36,10 @@ func TestStorage_CreateCity(t *testing.T) {
 }
 
 func TestStorage_GetCity(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	testCity := model.City{Name: "testCityName"}
-	row := s.dbConn.QueryRow(fmt.Sprintf("INSERT INTO %s (name) VALUES('%s') RETURNING id", s.cfg.CityTableName, testCity.Name))
+	row := s.db.QueryRow(fmt.Sprintf("INSERT INTO table_city (name) VALUES('%s') RETURNING id", testCity.Name))
 	err := row.Scan(&testCity.ID)
 	if err != nil {
 		t.Fatalf("scan new city id: %v", err)
@@ -58,7 +59,7 @@ func TestStorage_GetCity(t *testing.T) {
 }
 
 func TestStorage_GetAllCities(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	testInputCities := []model.City{
 		{Name: "testCityName1"},
@@ -66,7 +67,7 @@ func TestStorage_GetAllCities(t *testing.T) {
 		{Name: "testCityName3"},
 	}
 	for i := range testInputCities {
-		row := s.dbConn.QueryRow(fmt.Sprintf("INSERT INTO %s (name) VALUES('%s') RETURNING id", s.cfg.CityTableName, testInputCities[i].Name))
+		row := s.db.QueryRow(fmt.Sprintf("INSERT INTO table_city (name) VALUES('%s') RETURNING id", testInputCities[i].Name))
 		if err := row.Scan(&testInputCities[i].ID); err != nil {
 			t.Fatalf("scan new city id: %v", err)
 		}

@@ -1,7 +1,0 @@
-###
-
-GRPC localhost:6060/pbapi.UserService/GetUser
-
-{
-  "id": "1"
-}

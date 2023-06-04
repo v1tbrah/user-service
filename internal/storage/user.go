@@ -6,11 +6,12 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 )
 
 func (s *Storage) CreateUser(ctx context.Context, user model.User) (id int64, err error) {
-	tx, err := s.dbConn.Begin()
+	tx, err := s.db.Begin()
 	if err != nil {
 		return -1, err
 	}
@@ -20,7 +21,7 @@ func (s *Storage) CreateUser(ctx context.Context, user model.User) (id int64, er
 		}
 	}()
 
-	row := tx.Stmt(s.stmtUser.stmtCreateUser).QueryRowContext(ctx, user.Name, user.Surname, user.CityID)
+	row := tx.Stmt(s.user.create).QueryRowContext(ctx, user.Name, user.Surname, user.CityID)
 	if err = row.Scan(&id); err != nil {
 		return -1, fmt.Errorf("scan created user id: %w", err)
 	}
@@ -29,7 +30,7 @@ func (s *Storage) CreateUser(ctx context.Context, user model.User) (id int64, er
 	}
 
 	for _, interestID := range user.InterestsID {
-		if _, err = tx.Stmt(s.stmtUserPerInterest.stmtAddInterestToUser).ExecContext(ctx, id, interestID); err != nil {
+		if _, err = tx.Stmt(s.userPerInterest.addInterestToUser).ExecContext(ctx, id, interestID); err != nil {
 			return -1, fmt.Errorf("add user interest: %w", err)
 		}
 	}
@@ -42,7 +43,7 @@ func (s *Storage) CreateUser(ctx context.Context, user model.User) (id int64, er
 }
 
 func (s *Storage) GetUser(ctx context.Context, id int64) (user model.User, err error) {
-	row := s.stmtUser.stmtGetUser.QueryRowContext(ctx, id)
+	row := s.user.get.QueryRowContext(ctx, id)
 	if err = row.Scan(&user.ID, &user.Name, &user.Surname, &user.CityID); err != nil {
 		return user, fmt.Errorf("scan get user by id: %w", err)
 	}
@@ -50,7 +51,7 @@ func (s *Storage) GetUser(ctx context.Context, id int64) (user model.User, err e
 		return user, fmt.Errorf("check scan err: %w", row.Err())
 	}
 
-	rows, err := s.stmtUserPerInterest.stmtGetInterestsByUser.QueryContext(ctx, id)
+	rows, err := s.userPerInterest.getInterestListByUser.QueryContext(ctx, id)
 	if err != nil {
 		return user, fmt.Errorf("get interests by user: %w", err)
 	}

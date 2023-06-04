@@ -10,11 +10,12 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 )
 
 func TestStorage_CreateUser(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	tests := []struct {
 		name           string
@@ -101,7 +102,7 @@ func TestStorage_CreateUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s = initEmptyDB(t)
+			s = tHelperInitEmptyDB(t)
 
 			user := model.User{
 				Name:        tt.userName,
@@ -117,7 +118,7 @@ func TestStorage_CreateUser(t *testing.T) {
 			}
 
 			userFromDB := model.User{}
-			row := s.dbConn.QueryRow(fmt.Sprintf("SELECT name, surname, city_id FROM %s WHERE id=%d", s.cfg.UserTableName, id))
+			row := s.db.QueryRow(fmt.Sprintf("SELECT name, surname, city_id FROM table_user WHERE id=%d", id))
 			if err = row.Scan(&userFromDB.Name, &userFromDB.Surname, &userFromDB.CityID); err != nil {
 				t.Fatalf("scan new user: %v", err)
 			}
@@ -125,7 +126,10 @@ func TestStorage_CreateUser(t *testing.T) {
 				t.Fatalf("check scan err: %v", err)
 			}
 
-			rows, err := s.dbConn.Query(fmt.Sprintf("SELECT interest_id FROM %s WHERE user_id=%d", s.cfg.UserPerInterestTableName, id))
+			rows, err := s.db.Query(fmt.Sprintf("SELECT interest_id FROM table_user_per_interest WHERE user_id=%d", id))
+			if err != nil {
+				t.Fatalf("select interest_id list by user_id (%d)", id)
+			}
 			var tempInterestID int64
 			for rows.Next() {
 				if err = rows.Scan(&tempInterestID); err != nil {
@@ -143,7 +147,7 @@ func TestStorage_CreateUser(t *testing.T) {
 }
 
 func TestStorage_GetUser(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	tests := []struct {
 		name           string
@@ -230,7 +234,7 @@ func TestStorage_GetUser(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s = initEmptyDB(t)
+			s = tHelperInitEmptyDB(t)
 
 			user := model.User{
 				Name:        tt.userName,

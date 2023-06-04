@@ -8,9 +8,9 @@ import (
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/rs/zerolog/log"
-	"gitlab.com/pet-pr-social-network/user-service/internal/config"
 	"google.golang.org/grpc"
 
+	"gitlab.com/pet-pr-social-network/user-service/config"
 	"gitlab.com/pet-pr-social-network/user-service/pbapi"
 )
 
@@ -36,7 +36,7 @@ func New(storage Storage) (newAPI *API) {
 }
 
 func (a *API) StartServing(ctx context.Context, cfg config.GRPCConfig, shutdownSig <-chan os.Signal) (err error) {
-	addr := cfg.ServHost + ":" + cfg.ServPort
+	addr := net.JoinHostPort(cfg.Host, cfg.Port)
 	listen, errListen := net.Listen("tcp", addr)
 	if errListen != nil {
 		return fmt.Errorf("net listen tcp %s server: %w", addr, errListen)

@@ -6,11 +6,12 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 )
 
 func (s *Storage) CreateInterest(ctx context.Context, interest model.Interest) (id int64, err error) {
-	row := s.stmtInterest.stmtCreateInterest.QueryRowContext(ctx, interest.Name)
+	row := s.interest.create.QueryRowContext(ctx, interest.Name)
 	if err = row.Scan(&id); err != nil {
 		if pgError, ok := err.(*pgconn.PgError); ok && pgError.Code == pgerrcode.UniqueViolation {
 			return -1, ErrInterestAlreadyExists
@@ -25,7 +26,7 @@ func (s *Storage) CreateInterest(ctx context.Context, interest model.Interest) (
 }
 
 func (s *Storage) GetInterest(ctx context.Context, id int64) (interest model.Interest, err error) {
-	row := s.stmtInterest.stmtGetInterest.QueryRowContext(ctx, id)
+	row := s.interest.get.QueryRowContext(ctx, id)
 	if err = row.Scan(&interest.ID, &interest.Name); err != nil {
 		return interest, fmt.Errorf("scan get interest by id: %w", err)
 	}
@@ -37,7 +38,7 @@ func (s *Storage) GetInterest(ctx context.Context, id int64) (interest model.Int
 }
 
 func (s *Storage) GetAllInterests(ctx context.Context) (interests []model.Interest, err error) {
-	rows, err := s.stmtInterest.stmtGetAllInterests.QueryContext(ctx)
+	rows, err := s.interest.getAll.QueryContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get all interests: %w", err)
 	}

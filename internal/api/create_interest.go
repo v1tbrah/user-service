@@ -6,11 +6,11 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
+	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
 	"gitlab.com/pet-pr-social-network/user-service/pbapi"
 )
 

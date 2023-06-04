@@ -13,7 +13,6 @@ import (
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
-
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 	"gitlab.com/pet-pr-social-network/user-service/pbapi"
 )

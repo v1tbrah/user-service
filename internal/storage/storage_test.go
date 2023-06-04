@@ -3,12 +3,12 @@
 package storage
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"gitlab.com/pet-pr-social-network/user-service/internal/config"
+
+	"gitlab.com/pet-pr-social-network/user-service/config"
 )
 
 func TestStorage_Init(t *testing.T) {
@@ -20,27 +20,30 @@ func TestStorage_Init(t *testing.T) {
 	}
 	zerolog.SetGlobalLevel(cfg.LogLvl)
 
-	s := initEmptyDB(t)
-
-	// DROP TABLES TO CHECK THEIR EXISTENCE AFTER REINITIALIZATION
-	if _, err := s.dbConn.Query(fmt.Sprintf("DROP TABLE %s CASCADE", cfg.StorageConfig.CityTableName)); err != nil {
-		t.Fatalf("drop table city: %s", err)
+	s, err := Init(cfg.Storage)
+	if err != nil {
+		t.Fatalf("init storage: %v", err)
 	}
 
-	if _, err := s.dbConn.Query(fmt.Sprintf("DROP TABLE %s CASCADE", cfg.StorageConfig.InterestTableName)); err != nil {
-		t.Fatalf("drop table interest: %s", err)
+	// CHECK EXISTENCE AFTER INITIALIZATION
+	if _, err = s.db.Query("SELECT 1 FROM table_city"); err != nil {
+		t.Fatalf("select from table city: %v", err)
 	}
 
-	if _, err := s.dbConn.Query(fmt.Sprintf("DROP TABLE %s CASCADE", cfg.StorageConfig.UserTableName)); err != nil {
-		t.Fatalf("drop table users: %s", err)
+	if _, err = s.db.Query("SELECT 1 FROM table_interest"); err != nil {
+		t.Fatalf("select from table interest: %v", err)
 	}
 
-	if _, err := s.dbConn.Query(fmt.Sprintf("DROP TABLE %s CASCADE", cfg.StorageConfig.UserPerInterestTableName)); err != nil {
-		t.Fatalf("drop table user_per_interest: %s", err)
+	if _, err = s.db.Query("SELECT 1 FROM table_user"); err != nil {
+		t.Fatalf("select from table user: %v", err)
+	}
+
+	if _, err = s.db.Query("SELECT 1 FROM table_user_per_interest"); err != nil {
+		t.Fatalf("select from table user per interest: %v", err)
 	}
 }
 
-func initEmptyDB(t *testing.T) *Storage {
+func tHelperInitEmptyDB(t *testing.T) *Storage {
 	cfg := config.NewDefaultConfig()
 	zerolog.SetGlobalLevel(cfg.LogLvl)
 
@@ -49,31 +52,26 @@ func initEmptyDB(t *testing.T) *Storage {
 	}
 	zerolog.SetGlobalLevel(cfg.LogLvl)
 
-	s, err := Init(cfg.StorageConfig)
+	s, err := Init(cfg.Storage)
 	if err != nil {
 		t.Fatalf("init storage: %v", err)
 	}
 
-	// DROP TABLES IF THEY ALREADY EXIST
-	if _, err = s.dbConn.Query(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", s.cfg.CityTableName)); err != nil {
-		t.Fatalf("drop table city: %s", err)
+	// DELETE FROM TABLES FOR CLEAR TEST SPACE
+	if _, err = s.db.Query("DELETE FROM table_user CASCADE"); err != nil {
+		t.Fatalf("delete from table user: %v", err)
 	}
 
-	if _, err = s.dbConn.Query(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", s.cfg.InterestTableName)); err != nil {
-		t.Fatalf("drop table interest: %s", err)
+	if _, err = s.db.Query("DELETE FROM table_city CASCADE"); err != nil {
+		t.Fatalf("delete from table city: %v", err)
 	}
 
-	if _, err = s.dbConn.Query(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", s.cfg.UserTableName)); err != nil {
-		t.Fatalf("drop table users: %s", err)
+	if _, err = s.db.Query("DELETE FROM table_interest CASCADE"); err != nil {
+		t.Fatalf("delete from table interest: %v", err)
 	}
 
-	if _, err = s.dbConn.Query(fmt.Sprintf("DROP TABLE IF EXISTS %s CASCADE", s.cfg.UserPerInterestTableName)); err != nil {
-		t.Fatalf("drop table user_per_interest: %s", err)
-	}
-
-	// REINIT
-	if s, err = Init(cfg.StorageConfig); err != nil {
-		t.Fatalf("init storage after drop tables: %v", err)
+	if _, err = s.db.Query("DELETE FROM table_user_per_interest CASCADE"); err != nil {
+		t.Fatalf("delete from table user per interest: %v", err)
 	}
 
 	return s

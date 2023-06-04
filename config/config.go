@@ -13,23 +13,23 @@ const (
 )
 
 type Config struct {
-	GRPCConfig    GRPCConfig
-	StorageConfig StorageConfig
-	LogLvl        zerolog.Level
+	GRPCConfig GRPCConfig
+	Storage    Storage
+	LogLvl     zerolog.Level
 }
 
 func NewDefaultConfig() Config {
 	return Config{
-		GRPCConfig:    newDefaultGRPCConfig(),
-		StorageConfig: newDefaultStorageConfig(),
-		LogLvl:        defaultLogLvl,
+		GRPCConfig: newDefaultGRPCConfig(),
+		Storage:    newDefaultStorageConfig(),
+		LogLvl:     defaultLogLvl,
 	}
 }
 
 func (c *Config) ParseEnv() error {
 	c.GRPCConfig.parseEnv()
 
-	c.StorageConfig.parseEnv()
+	c.Storage.parseEnv()
 
 	if err := c.parseEnvLogLvl(); err != nil {
 		return err

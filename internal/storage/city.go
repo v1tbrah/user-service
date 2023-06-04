@@ -6,11 +6,12 @@ import (
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
+
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 )
 
 func (s *Storage) CreateCity(ctx context.Context, city model.City) (id int64, err error) {
-	row := s.stmtCity.stmtCreateCity.QueryRowContext(ctx, city.Name)
+	row := s.city.create.QueryRowContext(ctx, city.Name)
 	if err = row.Scan(&id); err != nil {
 		if pgError, ok := err.(*pgconn.PgError); ok && pgError.Code == pgerrcode.UniqueViolation {
 			return -1, ErrCityAlreadyExists
@@ -25,7 +26,7 @@ func (s *Storage) CreateCity(ctx context.Context, city model.City) (id int64, er
 }
 
 func (s *Storage) GetCity(ctx context.Context, id int64) (city model.City, err error) {
-	row := s.stmtCity.stmtGetCity.QueryRowContext(ctx, id)
+	row := s.city.get.QueryRowContext(ctx, id)
 	if err = row.Scan(&city.ID, &city.Name); err != nil {
 		return city, fmt.Errorf("scan get city by id: %w", err)
 	}
@@ -37,7 +38,7 @@ func (s *Storage) GetCity(ctx context.Context, id int64) (city model.City, err e
 }
 
 func (s *Storage) GetAllCities(ctx context.Context) (cities []model.City, err error) {
-	rows, err := s.stmtCity.stmtGetAllCities.QueryContext(ctx)
+	rows, err := s.city.getAll.QueryContext(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("get all cities: %v", err)
 	}
