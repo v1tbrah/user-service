@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -10,8 +9,8 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"gitlab.com/pet-pr-social-network/user-service/internal/config"
 
+	"gitlab.com/pet-pr-social-network/user-service/config"
 	"gitlab.com/pet-pr-social-network/user-service/internal/api"
 	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
 )
@@ -25,9 +24,9 @@ func main() {
 	}
 	zerolog.SetGlobalLevel(newConfig.LogLvl)
 
-	newStorage, err := storage.Init(newConfig.StorageConfig)
+	newStorage, err := storage.Init(newConfig.Storage)
 	if err != nil {
-		log.Fatal().Err(err).Str("config", fmt.Sprintf("%+v", newConfig.StorageConfig)).Msg("storage.Init")
+		log.Fatal().Err(err).Interface("config", newConfig.Storage).Msg("storage.Init")
 	} else {
 		log.Info().Msg("storage initialized")
 	}

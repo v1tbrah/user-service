@@ -8,10 +8,10 @@ import (
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
-func (a *API) GetAllInterests(ctx context.Context, req *pbapi.Empty) (*pbapi.GetAllInterestsResponse, error) {
+func (a *API) GetAllInterests(ctx context.Context, req *upbapi.Empty) (*upbapi.GetAllInterestsResponse, error) {
 	interests, err := a.storage.GetAllInterests(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("storage.GetAllInterests")
@@ -21,13 +21,13 @@ func (a *API) GetAllInterests(ctx context.Context, req *pbapi.Empty) (*pbapi.Get
 	return modelInterestsToProtoGetAllInterestResponse(interests), nil
 }
 
-func modelInterestsToProtoGetAllInterestResponse(interests []model.Interest) *pbapi.GetAllInterestsResponse {
-	resp := &pbapi.GetAllInterestsResponse{
-		Interests: make([]*pbapi.Interest, 0, len(interests)),
+func modelInterestsToProtoGetAllInterestResponse(interests []model.Interest) *upbapi.GetAllInterestsResponse {
+	resp := &upbapi.GetAllInterestsResponse{
+		Interests: make([]*upbapi.Interest, 0, len(interests)),
 	}
 
 	for _, interest := range interests {
-		resp.Interests = append(resp.Interests, &pbapi.Interest{
+		resp.Interests = append(resp.Interests, &upbapi.Interest{
 			Id:   interest.ID,
 			Name: interest.Name,
 		})

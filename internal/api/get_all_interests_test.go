@@ -13,14 +13,14 @@ import (
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_GetAllInterests(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		expectedResp    *pbapi.GetAllInterestsResponse
+		expectedResp    *upbapi.GetAllInterestsResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -45,8 +45,8 @@ func TestAPI_GetAllInterests(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			expectedResp: &pbapi.GetAllInterestsResponse{
-				Interests: []*pbapi.Interest{
+			expectedResp: &upbapi.GetAllInterestsResponse{
+				Interests: []*upbapi.Interest{
 					{
 						Id:   1,
 						Name: "TestName",
@@ -76,7 +76,7 @@ func TestAPI_GetAllInterests(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &API{storage: tt.mockStorage(t)}
-			resp, err := a.GetAllInterests(context.Background(), &pbapi.Empty{})
+			resp, err := a.GetAllInterests(context.Background(), &upbapi.Empty{})
 
 			if tt.wantErr {
 				assert.Error(t, err)

@@ -13,14 +13,14 @@ import (
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_GetAllCities(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		expectedResp    *pbapi.GetAllCitiesResponse
+		expectedResp    *upbapi.GetAllCitiesResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -45,8 +45,8 @@ func TestAPI_GetAllCities(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			expectedResp: &pbapi.GetAllCitiesResponse{
-				Cities: []*pbapi.City{
+			expectedResp: &upbapi.GetAllCitiesResponse{
+				Cities: []*upbapi.City{
 					{
 						Id:   1,
 						Name: "TestName",
@@ -76,7 +76,7 @@ func TestAPI_GetAllCities(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			a := &API{storage: tt.mockStorage(t)}
-			resp, err := a.GetAllCities(context.Background(), &pbapi.Empty{})
+			resp, err := a.GetAllCities(context.Background(), &upbapi.Empty{})
 
 			if tt.wantErr {
 				assert.Error(t, err)

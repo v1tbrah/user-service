@@ -6,18 +6,18 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
-func (a *API) CreateInterest(ctx context.Context, req *pbapi.CreateInterestRequest) (*pbapi.CreateInterestResponse, error) {
+func (a *API) CreateInterest(ctx context.Context, req *upbapi.CreateInterestRequest) (*upbapi.CreateInterestResponse, error) {
 	reqName := strings.TrimSpace(req.GetName())
 	if reqName == "" {
-		return nil, status.Error(codes.InvalidArgument, pbapi.ErrEmptyName.Error())
+		return nil, status.Error(codes.InvalidArgument, upbapi.ErrEmptyName.Error())
 	}
 
 	id, err := a.storage.CreateInterest(ctx, model.Interest{Name: reqName})
@@ -29,5 +29,5 @@ func (a *API) CreateInterest(ctx context.Context, req *pbapi.CreateInterestReque
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pbapi.CreateInterestResponse{Id: id}, nil
+	return &upbapi.CreateInterestResponse{Id: id}, nil
 }

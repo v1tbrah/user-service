@@ -14,15 +14,15 @@ import (
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_GetUser(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		req             *pbapi.GetUserRequest
-		expectedResp    *pbapi.GetUserResponse
+		req             *upbapi.GetUserRequest
+		expectedResp    *upbapi.GetUserResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -47,8 +47,8 @@ func TestAPI_GetUser(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.GetUserRequest{Id: int64(1)},
-			expectedResp: &pbapi.GetUserResponse{
+			req: &upbapi.GetUserRequest{Id: int64(1)},
+			expectedResp: &upbapi.GetUserResponse{
 				Name:        "TestName",
 				Surname:     "TestSurname",
 				InterestsID: []int64{1, 2, 3},
@@ -65,9 +65,9 @@ func TestAPI_GetUser(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req:             &pbapi.GetUserRequest{Id: int64(1)},
+			req:             &upbapi.GetUserRequest{Id: int64(1)},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrUserNotFoundByID,
+			expectedErr:     upbapi.ErrUserNotFoundByID,
 			expectedErrCode: codes.NotFound,
 		},
 		{
@@ -80,7 +80,7 @@ func TestAPI_GetUser(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req:             &pbapi.GetUserRequest{Id: int64(1)},
+			req:             &upbapi.GetUserRequest{Id: int64(1)},
 			wantErr:         true,
 			expectedErr:     errors.New("unexpected"),
 			expectedErrCode: codes.Internal,

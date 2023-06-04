@@ -1,0 +1,49 @@
+version: '3.8'
+
+networks:
+  test-network:
+    driver: bridge
+
+services:
+
+  user-service-test:
+    container_name: user-service-test
+    depends_on:
+      user-service-storage-test-migrate:
+        condition: service_completed_successfully
+    build:
+      dockerfile: test.Dockerfile
+    environment:
+      - LOG_LVL=info
+      - STORAGE_HOST=user-service-storage-test
+      - STORAGE_PORT=5432
+      - USER_DB_NAME=test_users
+    networks:
+      - test-network
+
+  user-service-storage-test:
+    image: postgres:alpine
+    container_name: user-service-storage-test
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 1s
+      retries: 5
+    volumes:
+      - ./test.init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - test-network
+
+  user-service-storage-test-migrate:
+    image: migrate/migrate:v4.15.2 # Image page: <https://hub.docker.com/r/migrate/migrate>
+    container_name: user-service-storage-test-migrate
+    volumes: [ .:/src:ro ]
+    working_dir: /src
+    entrypoint: migrate -database "postgres://postgres:postgres@user-service-storage-test:5432/test_users?sslmode=disable" -source file://./migrations -verbose up
+    depends_on:
+      user-service-storage-test:
+        condition: service_healthy
+    networks:
+      - test-network

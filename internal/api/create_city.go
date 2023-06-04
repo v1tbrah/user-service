@@ -11,13 +11,13 @@ import (
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
-func (a *API) CreateCity(ctx context.Context, req *pbapi.CreateCityRequest) (*pbapi.CreateCityResponse, error) {
+func (a *API) CreateCity(ctx context.Context, req *upbapi.CreateCityRequest) (*upbapi.CreateCityResponse, error) {
 	reqName := strings.TrimSpace(req.GetName())
 	if reqName == "" {
-		return nil, status.Error(codes.InvalidArgument, pbapi.ErrEmptyName.Error())
+		return nil, status.Error(codes.InvalidArgument, upbapi.ErrEmptyName.Error())
 	}
 
 	id, err := a.storage.CreateCity(ctx, model.City{Name: reqName})
@@ -29,5 +29,5 @@ func (a *API) CreateCity(ctx context.Context, req *pbapi.CreateCityRequest) (*pb
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &pbapi.CreateCityResponse{Id: id}, nil
+	return &upbapi.CreateCityResponse{Id: id}, nil
 }

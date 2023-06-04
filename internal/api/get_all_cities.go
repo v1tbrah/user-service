@@ -8,10 +8,10 @@ import (
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
-func (a *API) GetAllCities(ctx context.Context, req *pbapi.Empty) (*pbapi.GetAllCitiesResponse, error) {
+func (a *API) GetAllCities(ctx context.Context, req *upbapi.Empty) (*upbapi.GetAllCitiesResponse, error) {
 	cities, err := a.storage.GetAllCities(ctx)
 	if err != nil {
 		log.Error().Err(err).Msg("storage.GetAllCities")
@@ -21,13 +21,13 @@ func (a *API) GetAllCities(ctx context.Context, req *pbapi.Empty) (*pbapi.GetAll
 	return modelCitiesToProtoGetAllInterestResponse(cities), nil
 }
 
-func modelCitiesToProtoGetAllInterestResponse(cities []model.City) *pbapi.GetAllCitiesResponse {
-	resp := &pbapi.GetAllCitiesResponse{
-		Cities: make([]*pbapi.City, 0, len(cities)),
+func modelCitiesToProtoGetAllInterestResponse(cities []model.City) *upbapi.GetAllCitiesResponse {
+	resp := &upbapi.GetAllCitiesResponse{
+		Cities: make([]*upbapi.City, 0, len(cities)),
 	}
 
 	for _, city := range cities {
-		resp.Cities = append(resp.Cities, &pbapi.City{
+		resp.Cities = append(resp.Cities, &upbapi.City{
 			Id:   city.ID,
 			Name: city.Name,
 		})

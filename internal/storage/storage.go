@@ -6,77 +6,63 @@ import (
 	"fmt"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"gitlab.com/pet-pr-social-network/user-service/internal/config"
+	"github.com/pkg/errors"
+
+	"gitlab.com/pet-pr-social-network/user-service/config"
 )
 
 type Storage struct {
-	dbConn *sql.DB
+	db *sql.DB
 
-	stmtCity            StmtCity
-	stmtInterest        StmtInterest
-	stmtUser            StmtUser
-	stmtUserPerInterest StmtUserPerInterest
+	city            city
+	interest        interest
+	user            user
+	userPerInterest userPerInterest
 
-	cfg config.StorageConfig
+	cfg config.Storage
 }
 
-func Init(cfg config.StorageConfig) (*Storage, error) {
+func Init(cfg config.Storage) (*Storage, error) {
 	newStorage := &Storage{cfg: cfg}
 
-	dbConn, err := sql.Open("pgx", connString(cfg))
+	db, err := sql.Open("pgx", connString(cfg))
 	if err != nil {
-		return nil, fmt.Errorf("sql.Open: %w", err)
+		return nil, errors.Wrapf(err, "sql.Open")
 	}
-	newStorage.dbConn = dbConn
+	newStorage.db = db
 
-	dbConn.SetMaxOpenConns(maxOpenConns)
-	dbConn.SetMaxIdleConns(maxIdleConns)
-	dbConn.SetConnMaxIdleTime(maxIdleTime)
-	dbConn.SetConnMaxLifetime(maxLifeTime)
+	db.SetMaxOpenConns(maxOpenConns)
+	db.SetMaxIdleConns(maxIdleConns)
+	db.SetConnMaxIdleTime(maxIdleTime)
+	db.SetConnMaxLifetime(maxLifeTime)
 
-	if err = dbConn.Ping(); err != nil {
-		return nil, fmt.Errorf("dbConn.Ping: %w", err)
+	if err = db.Ping(); err != nil {
+		return nil, errors.Wrapf(err, "db.Ping")
 	}
 
-	tx, err := dbConn.Begin()
+	tx, err := db.Begin()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "db.Begin")
 	}
 	defer tx.Rollback()
 
-	if _, err = tx.Exec(fmt.Sprintf(createTableCityTmpl, cfg.CityTableName)); err != nil {
-		return nil, fmt.Errorf("CreateTableCity: %w", err)
-	}
-
-	if _, err = tx.Exec(fmt.Sprintf(createTableInterestTmpl, cfg.InterestTableName)); err != nil {
-		return nil, fmt.Errorf("CreateTableInterest: %w", err)
-	}
-
-	if _, err = tx.Exec(fmt.Sprintf(createTableUserTmpl, cfg.UserTableName, cfg.CityTableName)); err != nil {
-		return nil, fmt.Errorf("CreateTableUser: %w", err)
-	}
-
-	if _, err = tx.Exec(fmt.Sprintf(createTableUserPerInterestTmpl, cfg.UserPerInterestTableName)); err != nil {
-		return nil, fmt.Errorf("CreateTableUserPerInterest: %w", err)
-	}
-
 	if err = tx.Commit(); err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "tx.Commit")
 	}
 
-	if err = newStorage.stmtCity.prepare(dbConn, cfg.CityTableName); err != nil {
-		return nil, fmt.Errorf("prepare 'city' stmts: %w", err)
+	if err = newStorage.city.prepare(db); err != nil {
+		return nil, errors.Wrapf(err, "prepare 'city' stmts")
 	}
 
-	if err = newStorage.stmtInterest.prepare(dbConn, cfg.InterestTableName); err != nil {
-		return nil, fmt.Errorf("prepare 'interest' stmts: %w", err)
+	if err = newStorage.interest.prepare(db); err != nil {
+		return nil, errors.Wrapf(err, "prepare 'interest' stmts")
 	}
 
-	if err = newStorage.stmtUser.prepare(dbConn, cfg.UserTableName); err != nil {
-		return nil, fmt.Errorf("prepare 'user' stmts: %w", err)
+	if err = newStorage.user.prepare(db); err != nil {
+		return nil, errors.Wrapf(err, "prepare 'user' stmts")
 	}
 
-	if err = newStorage.stmtUserPerInterest.prepare(dbConn, cfg.UserPerInterestTableName); err != nil {
+	if err = newStorage.userPerInterest.prepare(db); err != nil {
 		return nil, fmt.Errorf("prepare 'user per interest' stmts: %w", err)
 	}
 
@@ -87,32 +73,32 @@ func (s *Storage) Close(ctx context.Context) (err error) {
 	closeEnded := make(chan struct{})
 
 	go func() {
-		if err = s.stmtCity.Close(ctx); err != nil {
-			err = fmt.Errorf("close stmt city: %w", err)
+		if err = s.city.close(ctx); err != nil {
+			err = errors.Wrapf(err, "close stmt 'city'")
 			closeEnded <- struct{}{}
 			return
 		}
 
-		if err = s.stmtInterest.Close(ctx); err != nil {
-			err = fmt.Errorf("close stmt interest: %w", err)
+		if err = s.interest.close(ctx); err != nil {
+			err = errors.Wrapf(err, "close stmt 'interest'")
 			closeEnded <- struct{}{}
 			return
 		}
 
-		if err = s.stmtUser.Close(ctx); err != nil {
-			err = fmt.Errorf("close stmt user: %w", err)
+		if err = s.user.close(ctx); err != nil {
+			err = errors.Wrapf(err, "close stmt 'user'")
 			closeEnded <- struct{}{}
 			return
 		}
 
-		if err = s.stmtUserPerInterest.Close(ctx); err != nil {
-			err = fmt.Errorf("close stmt user per interest: %w", err)
+		if err = s.userPerInterest.close(ctx); err != nil {
+			err = errors.Wrapf(err, "close stmt 'user per interest'")
 			closeEnded <- struct{}{}
 			return
 		}
 
-		if err = s.dbConn.Close(); err != nil {
-			err = fmt.Errorf("close db conn: %w", err)
+		if err = s.db.Close(); err != nil {
+			err = errors.Wrapf(err, "close db conn")
 			closeEnded <- struct{}{}
 			return
 		}
@@ -128,7 +114,7 @@ func (s *Storage) Close(ctx context.Context) (err error) {
 	}
 }
 
-func connString(cfg config.StorageConfig) string {
+func connString(cfg config.Storage) string {
 	// example: "postgres://username:password@localhost:5432/database_name"
 	return "postgres://" + cfg.User + ":" + cfg.Password + "@" + cfg.Host + ":" + cfg.Port + "/" + cfg.UserDBName
 }

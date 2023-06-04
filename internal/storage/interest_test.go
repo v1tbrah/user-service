@@ -9,11 +9,12 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"gitlab.com/pet-pr-social-network/user-service/internal/model"
 )
 
 func TestStorage_CreateInterest(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	testInterest := model.Interest{Name: "testInterestName"}
 	idNewInterest, err := s.CreateInterest(context.Background(), testInterest)
@@ -21,7 +22,7 @@ func TestStorage_CreateInterest(t *testing.T) {
 		t.Fatalf("s.CreateInterest: %v", err)
 	}
 
-	row := s.dbConn.QueryRow(fmt.Sprintf("SELECT name FROM %s WHERE id=%d", s.cfg.InterestTableName, idNewInterest))
+	row := s.db.QueryRow(fmt.Sprintf("SELECT name FROM table_interest WHERE id=%d", idNewInterest))
 	if err = row.Scan(&testInterest.Name); err != nil {
 		t.Fatalf("scan get new interest name: %v", err)
 	}
@@ -35,10 +36,10 @@ func TestStorage_CreateInterest(t *testing.T) {
 }
 
 func TestStorage_GetInterest(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	testInterest := model.Interest{Name: "testInterestName"}
-	row := s.dbConn.QueryRow(fmt.Sprintf("INSERT INTO %s (name) VALUES('%s') RETURNING id", s.cfg.InterestTableName, testInterest.Name))
+	row := s.db.QueryRow(fmt.Sprintf("INSERT INTO table_interest (name) VALUES('%s') RETURNING id", testInterest.Name))
 	if err := row.Scan(&testInterest.ID); err != nil {
 		t.Fatalf("scan new interest id: %v", err)
 	}
@@ -57,7 +58,7 @@ func TestStorage_GetInterest(t *testing.T) {
 }
 
 func TestStorage_GetAllInterests(t *testing.T) {
-	s := initEmptyDB(t)
+	s := tHelperInitEmptyDB(t)
 
 	testInputInterests := []model.Interest{
 		{Name: "testInterestName1"},
@@ -65,7 +66,7 @@ func TestStorage_GetAllInterests(t *testing.T) {
 		{Name: "testInterestName3"},
 	}
 	for i := range testInputInterests {
-		row := s.dbConn.QueryRow(fmt.Sprintf("INSERT INTO %s (name) VALUES('%s') RETURNING id", s.cfg.InterestTableName, testInputInterests[i].Name))
+		row := s.db.QueryRow(fmt.Sprintf("INSERT INTO table_interest (name) VALUES('%s') RETURNING id", testInputInterests[i].Name))
 		if err := row.Scan(&testInputInterests[i].ID); err != nil {
 			t.Fatalf("scan new interest id: %v", err)
 		}

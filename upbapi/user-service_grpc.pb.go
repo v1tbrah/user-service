@@ -4,7 +4,7 @@
 // - protoc             v3.14.0
 // source: user-service.proto
 
-package pbapi
+package upbapi
 
 import (
 	context "context"
@@ -19,14 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserService_CreateUser_FullMethodName      = "/pbapi.UserService/CreateUser"
-	UserService_GetUser_FullMethodName         = "/pbapi.UserService/GetUser"
-	UserService_CreateInterest_FullMethodName  = "/pbapi.UserService/CreateInterest"
-	UserService_GetInterest_FullMethodName     = "/pbapi.UserService/GetInterest"
-	UserService_GetAllInterests_FullMethodName = "/pbapi.UserService/GetAllInterests"
-	UserService_CreateCity_FullMethodName      = "/pbapi.UserService/CreateCity"
-	UserService_GetCity_FullMethodName         = "/pbapi.UserService/GetCity"
-	UserService_GetAllCities_FullMethodName    = "/pbapi.UserService/GetAllCities"
+	UserService_CreateUser_FullMethodName      = "/upbapi.UserService/CreateUser"
+	UserService_GetUser_FullMethodName         = "/upbapi.UserService/GetUser"
+	UserService_CreateInterest_FullMethodName  = "/upbapi.UserService/CreateInterest"
+	UserService_GetInterest_FullMethodName     = "/upbapi.UserService/GetInterest"
+	UserService_GetAllInterests_FullMethodName = "/upbapi.UserService/GetAllInterests"
+	UserService_CreateCity_FullMethodName      = "/upbapi.UserService/CreateCity"
+	UserService_GetCity_FullMethodName         = "/upbapi.UserService/GetCity"
+	UserService_GetAllCities_FullMethodName    = "/upbapi.UserService/GetAllCities"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -327,7 +327,7 @@ func _UserService_GetAllCities_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pbapi.UserService",
+	ServiceName: "upbapi.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

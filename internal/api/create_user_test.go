@@ -12,15 +12,15 @@ import (
 	"google.golang.org/grpc/status"
 
 	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
-	"gitlab.com/pet-pr-social-network/user-service/pbapi"
+	"gitlab.com/pet-pr-social-network/user-service/upbapi"
 )
 
 func TestAPI_CreateUser(t *testing.T) {
 	tests := []struct {
 		name            string
 		mockStorage     func(t *testing.T) *mocks.Storage
-		req             *pbapi.CreateUserRequest
-		expectedResp    *pbapi.CreateUserResponse
+		req             *upbapi.CreateUserRequest
+		expectedResp    *upbapi.CreateUserResponse
 		wantErr         bool
 		expectedErr     error
 		expectedErrCode codes.Code
@@ -35,27 +35,27 @@ func TestAPI_CreateUser(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.CreateUserRequest{
+			req: &upbapi.CreateUserRequest{
 				Name:        "TestName",
 				Surname:     "TestSurname",
 				InterestsID: []int64{},
 				CityID:      int64(1),
 			},
-			expectedResp: &pbapi.CreateUserResponse{Id: int64(1)},
+			expectedResp: &upbapi.CreateUserResponse{Id: int64(1)},
 		},
 		{
 			name: "empty name",
 			mockStorage: func(t *testing.T) *mocks.Storage {
 				return mocks.NewStorage(t)
 			},
-			req: &pbapi.CreateUserRequest{
+			req: &upbapi.CreateUserRequest{
 				Name:        "",
 				Surname:     "TestSurname",
 				InterestsID: []int64{},
 				CityID:      int64(1),
 			},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrEmptyName,
+			expectedErr:     upbapi.ErrEmptyName,
 			expectedErrCode: codes.InvalidArgument,
 		},
 		{
@@ -63,14 +63,14 @@ func TestAPI_CreateUser(t *testing.T) {
 			mockStorage: func(t *testing.T) *mocks.Storage {
 				return mocks.NewStorage(t)
 			},
-			req: &pbapi.CreateUserRequest{
+			req: &upbapi.CreateUserRequest{
 				Name:        "   ",
 				Surname:     "TestSurname",
 				InterestsID: []int64{},
 				CityID:      int64(1),
 			},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrEmptyName,
+			expectedErr:     upbapi.ErrEmptyName,
 			expectedErrCode: codes.InvalidArgument,
 		},
 		{
@@ -78,14 +78,14 @@ func TestAPI_CreateUser(t *testing.T) {
 			mockStorage: func(t *testing.T) *mocks.Storage {
 				return mocks.NewStorage(t)
 			},
-			req: &pbapi.CreateUserRequest{
+			req: &upbapi.CreateUserRequest{
 				Name:        "TestName",
 				Surname:     "",
 				InterestsID: []int64{},
 				CityID:      int64(1),
 			},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrEmptySurname,
+			expectedErr:     upbapi.ErrEmptySurname,
 			expectedErrCode: codes.InvalidArgument,
 		},
 		{
@@ -93,14 +93,14 @@ func TestAPI_CreateUser(t *testing.T) {
 			mockStorage: func(t *testing.T) *mocks.Storage {
 				return mocks.NewStorage(t)
 			},
-			req: &pbapi.CreateUserRequest{
+			req: &upbapi.CreateUserRequest{
 				Name:        "TestName",
 				Surname:     "   ",
 				InterestsID: []int64{},
 				CityID:      int64(1),
 			},
 			wantErr:         true,
-			expectedErr:     pbapi.ErrEmptySurname,
+			expectedErr:     upbapi.ErrEmptySurname,
 			expectedErrCode: codes.InvalidArgument,
 		},
 		{
@@ -113,7 +113,7 @@ func TestAPI_CreateUser(t *testing.T) {
 					Once()
 				return testStorage
 			},
-			req: &pbapi.CreateUserRequest{
+			req: &upbapi.CreateUserRequest{
 				Name:        "TestName",
 				Surname:     "TestSurname",
 				InterestsID: []int64{},
