@@ -4,7 +4,6 @@ Please, follow the next rules for your migrations:
 
 - Only one SQL query per file
 - Rollback (down) migration must be written for each migration file
-- Naming rule (pattern): `%10_digits_num%_%name%.(up|down).sql`
 - Changes should only concern the scheme, **not** the data
 
 ## Docs
