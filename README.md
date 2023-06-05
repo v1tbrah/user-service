@@ -9,7 +9,7 @@ make up
 ```
 
 * Stop service:
-```
+```sh
 make down
 ```
 
