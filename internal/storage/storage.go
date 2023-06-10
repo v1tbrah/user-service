@@ -8,7 +8,7 @@ import (
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
 
-	"gitlab.com/pet-pr-social-network/user-service/config"
+	"github.com/v1tbrah/user-service/config"
 )
 
 type Storage struct {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/model"
+	"github.com/v1tbrah/user-service/internal/model"
 )
 
 func TestStorage_CreateCity(t *testing.T) {
