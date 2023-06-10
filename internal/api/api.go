@@ -10,8 +10,8 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 
-	"gitlab.com/pet-pr-social-network/user-service/config"
-	"gitlab.com/pet-pr-social-network/user-service/upbapi"
+	"github.com/v1tbrah/user-service/config"
+	"github.com/v1tbrah/user-service/upbapi"
 )
 
 type API struct {

@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/api/mocks"
-	"gitlab.com/pet-pr-social-network/user-service/upbapi"
+	"github.com/v1tbrah/user-service/internal/api/mocks"
+	"github.com/v1tbrah/user-service/upbapi"
 )
 
 func TestAPI_CreateInterest(t *testing.T) {

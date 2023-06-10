@@ -9,9 +9,9 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/internal/storage"
-	"gitlab.com/pet-pr-social-network/user-service/upbapi"
+	"github.com/v1tbrah/user-service/internal/model"
+	"github.com/v1tbrah/user-service/internal/storage"
+	"github.com/v1tbrah/user-service/upbapi"
 )
 
 func (a *API) CreateCity(ctx context.Context, req *upbapi.CreateCityRequest) (*upbapi.CreateCityResponse, error) {

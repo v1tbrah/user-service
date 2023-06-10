@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/model"
-	"gitlab.com/pet-pr-social-network/user-service/upbapi"
+	"github.com/v1tbrah/user-service/internal/model"
+	"github.com/v1tbrah/user-service/upbapi"
 )
 
 func (a *API) GetAllInterests(ctx context.Context, req *upbapi.Empty) (*upbapi.GetAllInterestsResponse, error) {

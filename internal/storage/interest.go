@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/model"
+	"github.com/v1tbrah/user-service/internal/model"
 )
 
 func (s *Storage) CreateInterest(ctx context.Context, interest model.Interest) (id int64, err error) {

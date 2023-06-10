@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/model"
+	"github.com/v1tbrah/user-service/internal/model"
 )
 
 func TestStorage_CreateUser(t *testing.T) {

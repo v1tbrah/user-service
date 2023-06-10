@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 
-	"gitlab.com/pet-pr-social-network/user-service/internal/model"
+	"github.com/v1tbrah/user-service/internal/model"
 )
 
 func (s *Storage) CreateUser(ctx context.Context, user model.User) (id int64, err error) {
