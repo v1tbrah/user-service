@@ -10,25 +10,32 @@ import (
 	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
 
+	"github.com/v1tbrah/promcli"
 	"github.com/v1tbrah/user-service/config"
 	"github.com/v1tbrah/user-service/upbapi"
 )
 
 type API struct {
-	server  *grpc.Server
+	server *grpc.Server
+
 	storage Storage
+
+	promCli *promcli.HTTPReg
+
 	upbapi.UnimplementedUserServiceServer
 }
 
 func New(storage Storage) (newAPI *API) {
 	newAPI = &API{
-		server: grpc.NewServer(grpc.UnaryInterceptor(
-			grpc_middleware.ChainUnaryServer(
-				interceptorLog,
-			),
-		)),
 		storage: storage,
+		promCli: promcli.NewHTTP("user_service", "api"),
 	}
+
+	newAPI.server = grpc.NewServer(grpc.UnaryInterceptor(
+		grpc_middleware.ChainUnaryServer(
+			newAPI.interceptor,
+		),
+	))
 
 	upbapi.RegisterUserServiceServer(newAPI.server, newAPI)
 
