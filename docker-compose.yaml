@@ -19,6 +19,8 @@ services:
     environment:
       - GRPC_HOST=0.0.0.0
       - GRPC_PORT=6060
+      - HTTP_HOST=0.0.0.0
+      - HTTP_PORT=6969
       - LOG_LVL=info
       - STORAGE_HOST=user-service-storage
       - STORAGE_PORT=5432
@@ -27,6 +29,7 @@ services:
       - USER_DB_NAME=users
     ports:
       - "6060:6060"
+      - "6969:6969"
     networks:
       - default-network
 

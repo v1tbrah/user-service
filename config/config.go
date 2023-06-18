@@ -14,6 +14,7 @@ const (
 
 type Config struct {
 	GRPCConfig GRPCConfig
+	HTTPConfig HTTPConfig
 	Storage    Storage
 	LogLvl     zerolog.Level
 }
@@ -21,6 +22,7 @@ type Config struct {
 func NewDefaultConfig() Config {
 	return Config{
 		GRPCConfig: newDefaultGRPCConfig(),
+		HTTPConfig: newDefaultHTTPConfig(),
 		Storage:    newDefaultStorageConfig(),
 		LogLvl:     defaultLogLvl,
 	}
@@ -28,6 +30,8 @@ func NewDefaultConfig() Config {
 
 func (c *Config) ParseEnv() error {
 	c.GRPCConfig.parseEnv()
+
+	c.HTTPConfig.parseEnv()
 
 	c.Storage.parseEnv()
 
