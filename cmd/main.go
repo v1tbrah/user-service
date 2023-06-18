@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -31,36 +32,41 @@ func main() {
 		log.Info().Msg("storage initialized")
 	}
 
-	newAPI := api.New(newStorage)
+	newAPI := api.New(newConfig.HTTPConfig, newStorage)
 
 	shutdownSig := make(chan os.Signal, 1)
 	signal.Notify(shutdownSig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
+	ctxStart, ctxStartCancel := context.WithCancel(context.Background())
+
 	errServingCh := make(chan error)
 	go func() {
-		errServing := newAPI.StartServing(context.Background(), newConfig.GRPCConfig, shutdownSig)
+		errServing := newAPI.StartServing(ctxStart, newConfig.GRPCConfig, shutdownSig)
 		errServingCh <- errServing
 	}()
 
 	select {
-	case <-shutdownSig:
+	case shutdownSigValue := <-shutdownSig:
 		close(shutdownSig)
+		log.Info().Msgf("Shutdown signal received: %s", strings.ToUpper(shutdownSigValue.String()))
 	case errServing := <-errServingCh:
 		if errServing != nil {
 			log.Error().Err(errServing).Msg("newAPI.StartServing")
 		}
 	}
 
-	ctxClose, cancel := context.WithTimeout(context.Background(), time.Second*30)
-	defer cancel()
+	ctxStartCancel()
+
+	ctxClose, ctxCloseCancel := context.WithTimeout(context.Background(), time.Second*30)
+	defer ctxCloseCancel()
 
 	if err = newAPI.GracefulStop(ctxClose); err != nil {
-		log.Error().Err(err).Msg("gRPC server graceful stop")
+		log.Error().Err(err).Msg("gRPC and HTTP server graceful stop")
 		if err == context.DeadlineExceeded {
 			return
 		}
 	} else {
-		log.Info().Msg("gRPC server gracefully stopped")
+		log.Info().Msg("gRPC and HTTP servers gracefully stopped")
 	}
 
 	if err = newStorage.Close(ctxClose); err != nil {
